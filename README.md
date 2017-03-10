@@ -2,9 +2,15 @@
 Simple service to manage a TODO list
 
 # Requirements
-You should have Docker installed and running
+- docker
+- sbt
 
-# Starting the service
+# Build the service
+
+To build the docker image of the service, run the following command:  
+`sbt docker:publishLocal`
+
+# Start the service
 
 Start cassandra:  
 `bash bin/run-cassandra.sh`
