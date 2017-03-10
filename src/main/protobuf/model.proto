@@ -1,0 +1,12 @@
+option java_package = "com.todos.model";
+
+message TodoMdl {
+  optional string id = 1;
+  optional string title = 2;
+  optional bool completed = 3;
+}
+
+message TodoRegistryMdl {
+  repeated TodoMdl todos = 1;
+  optional int64 messageOffset = 2;
+}

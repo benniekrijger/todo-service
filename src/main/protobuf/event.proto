@@ -1,0 +1,11 @@
+option java_package = "com.todos.event";
+
+message TodoCreatedEvt {
+  optional string id = 1;
+  optional string title = 2;
+  optional bool completed = 3;
+}
+
+message TodoRemovedEvt {
+  optional string id = 1;
+}
