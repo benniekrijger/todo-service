@@ -13,18 +13,23 @@ import com.todos.query.{FindTodo, FindTodos}
 import com.todos.response.{NotFound, TodoView, TodosView}
 import akka.pattern.pipe
 
-class TodoRepositoryView() extends PersistentActor with ActorLogging with TodoRepositoryUpdater with Stash {
-  log.info("Started {}", self.path.name)
+import scala.util.Random
 
+class TodoRepositoryView() extends PersistentActor with ActorLogging with TodoRepositoryUpdater with Stash {
   implicit val mat = ActorMaterializer()
 
-  def persistenceId: String = self.path.name
+  def persistenceId: String = TodoRepositoryView.name + "-" + self.path.name
+
+  log.info("Started {}", persistenceId)
 
   var state: TodoRegistry = TodoRegistry.empty()
 
   context.system.eventStream.subscribe(self, classOf[ProcessedEvent])
 
   def receiveCommand: Receive = recovering
+
+  // the random parts prevents all views snapshotting at the same time
+  lazy val snapshotInterval: Int = 10 + Random.nextInt(20)
 
   def recovering: Receive = {
     case Done =>
@@ -37,8 +42,8 @@ class TodoRepositoryView() extends PersistentActor with ActorLogging with TodoRe
     case evt: ProcessedEvent =>
       updateState(evt.event)
 
-      if (evt.sequenceNr % 5 == 0) {
-        log.info("Snapshotting state, state={}, sequenceNr={}", state, evt.sequenceNr)
+      if (evt.sequenceNr % snapshotInterval == 0) {
+        log.debug("Snapshotting state, state={}, sequenceNr={}", state, evt.sequenceNr)
 
         saveSnapshot(
           state.copy(

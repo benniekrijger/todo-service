@@ -5,15 +5,15 @@ object  Dependencies {
     val akka = "2.5-M1"
     val akkaHttp = "10.0.4"
     val akkaHttpJson4s = "1.12.0"
-    val log4j = "2.8"
+    val log4j = "2.8.1"
     val akkaLog4j = "1.3.0"
     val scalaTest = "3.0.1"
     val json4s = "3.5.0"
     val jodaTime = "2.9.7"
     val jodaConvert = "1.8.1"
     val ficus = "1.4.0"
-    val akkaPersistenceCassandra = "0.22"
-    val log4jOverSlf4j = "1.7.12"
+    val akkaPersistenceCassandra = "0.23"
+    val log4jOverSlf4j = "1.7.24"
   }
 
   private[this] lazy val tests = Seq(

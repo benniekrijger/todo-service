@@ -24,7 +24,7 @@ docker ps -aq --filter name=${image} | xargs docker rm -f
 for i in `seq 1 ${n}`; do
     api_port=801${i}
     cluster_port=255${i}
-    echo "Running docker image ${image} with tag ${tag}, instance ${i}, reachable at 127.0.0.1:${api_port}..."
+    echo "Running docker image ${image} with tag ${tag}, instance ${i}, reachable at 127.0.0.1:${api_port}"
 
     docker run \
       --detach \
