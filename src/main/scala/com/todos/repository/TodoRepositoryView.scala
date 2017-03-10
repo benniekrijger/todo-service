@@ -83,12 +83,11 @@ class TodoRepositoryView() extends PersistentActor with ActorLogging with TodoRe
 
   override def receiveRecover: Receive = {
     case SnapshotOffer(_, snapshot: TodoRegistry) =>
-      log.info("Received snapshot, snapshot={}", snapshot)
+      log.debug("Received snapshot, snapshot={}", snapshot)
       state = snapshot
     case _: RecoveryCompleted => // no action
       import context.dispatcher
-
-      log.info("Recovered, state={}", state)
+      log.debug("Recovered, state={}", state)
 
       PersistenceQuery(context.system)
         .readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
