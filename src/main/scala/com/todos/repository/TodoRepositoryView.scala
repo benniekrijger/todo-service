@@ -8,14 +8,15 @@ import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
 import com.todos.event.utils.ProcessedEvent
-import com.todos.model.TodoRegistry
+import com.todos.model.{Todo, TodoRegistry}
 import com.todos.query.{FindTodo, FindTodos}
 import com.todos.response.{NotFound, TodoView, TodosView}
 import akka.pattern.pipe
+import com.todos.event.{TodoCreated, TodoRemoved}
 
 import scala.util.Random
 
-class TodoRepositoryView() extends PersistentActor with ActorLogging with TodoRepositoryUpdater with Stash {
+class TodoRepositoryView() extends PersistentActor with ActorLogging with Stash {
   implicit val mat = ActorMaterializer()
 
   def persistenceId: String = TodoRepositoryView.name + "-" + self.path.name
@@ -79,6 +80,21 @@ class TodoRepositoryView() extends PersistentActor with ActorLogging with TodoRe
         case _ =>
           sender() ! NotFound()
       }
+  }
+
+  private[this] val updateState: Receive = {
+    case evt: TodoCreated =>
+      state = state.copy(
+        todos = state.todos :+ Todo(
+          id = evt.id,
+          title = evt.title,
+          completed = evt.completed
+        )
+      )
+    case evt: TodoRemoved =>
+      state = state.copy(
+        todos = state.todos.filterNot(_.id == evt.id)
+      )
   }
 
   override def receiveRecover: Receive = {

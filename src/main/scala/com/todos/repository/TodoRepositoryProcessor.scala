@@ -2,20 +2,17 @@ package com.todos.repository
 
 import java.util.UUID
 
-import akka.actor.{ActorLogging, Props}
+import akka.actor.{Actor, ActorLogging, Props}
 import akka.persistence.PersistentActor
 import com.todos.command.{CreateTodo, RemoveTodo}
 import com.todos.event.utils.ProcessedEvent
 import com.todos.event.{TodoCreated, TodoRemoved}
-import com.todos.model.TodoRegistry
 import com.todos.response.Success
 
-class TodoRepositoryProcessor() extends PersistentActor with ActorLogging with TodoRepositoryUpdater {
+class TodoRepositoryProcessor() extends PersistentActor with ActorLogging {
   log.info("Started {}", self.path.name)
 
   def persistenceId: String = self.path.name
-
-  var state: TodoRegistry = TodoRegistry.empty()
 
   def receiveCommand: Receive = {
     case cmd: CreateTodo =>
@@ -26,22 +23,19 @@ class TodoRepositoryProcessor() extends PersistentActor with ActorLogging with T
           completed = cmd.completed
         )
       ) { persistedEvent =>
-        updateState(persistedEvent)
         sender() ! Success()
 
         context.system.eventStream.publish(ProcessedEvent(persistedEvent, lastSequenceNr))
       }
     case cmd: RemoveTodo =>
       persist(event = TodoRemoved(cmd.id)) { persistedEvent =>
-        updateState(persistedEvent)
-
         sender() ! Success()
 
         context.system.eventStream.publish(ProcessedEvent(persistedEvent, lastSequenceNr))
       }
   }
 
-  override def receiveRecover: Receive = updateState
+  override def receiveRecover: Receive = Actor.ignoringBehavior
 
 }
 
