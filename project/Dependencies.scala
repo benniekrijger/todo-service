@@ -4,6 +4,7 @@ object  Dependencies {
   object Version {
     val akka = "2.5-M1"
     val akkaHttp = "10.0.4"
+    val akkaHttpCors = "0.1.11"
     val akkaHttpJson4s = "1.12.0"
     val log4j = "2.8.1"
     val akkaLog4j = "1.3.0"
@@ -37,7 +38,8 @@ object  Dependencies {
     "com.typesafe.akka"                   %% "akka-http-testkit"                  % Version.akkaHttp,
     "de.heikoseeberger"                   %% "akka-http-json4s"                   % Version.akkaHttpJson4s,
     "org.json4s"                          %% "json4s-jackson"                     % Version.json4s,
-    "org.json4s"                          %% "json4s-ext"                         % Version.json4s
+    "org.json4s"                          %% "json4s-ext"                         % Version.json4s,
+    "ch.megard"                           %% "akka-http-cors"                     % Version.akkaHttpCors
   )
 
   private[this] lazy val persistence = Seq(

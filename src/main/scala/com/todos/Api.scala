@@ -9,6 +9,7 @@ import akka.http.scaladsl.server.{Directives, Route, RouteConcatenation}
 import akka.pattern.{pipe, _}
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
+import ch.megard.akka.http.cors.CorsDirectives._
 import com.todos.command.{CreateTodo, RemoveTodo}
 import com.todos.query.{FindTodo, FindTodos}
 import com.todos.response.{NotFound, Success, TodoView, TodosView}
@@ -37,53 +38,55 @@ class Api(
 
   val routes: Route =
     pathPrefix("api" / "v1") {
-      pathPrefix("todos") {
-        pathEnd {
-          get {
-            parameters("offset".as[Int].?, "limit".as[Int].?) { (offset, limit) =>
-              onSuccess(
-                todoRepositoryView ? FindTodos(
-                  offset = offset.getOrElse(0),
-                  limit = limit.getOrElse(100)
-                )
-              ) {
-                case resp: TodosView =>
-                  complete(StatusCodes.OK, resp)
-                case _ =>
-                  complete(StatusCodes.BadRequest)
+      cors() {
+        pathPrefix("todos") {
+          pathEnd {
+            get {
+              parameters("offset".as[Int].?, "limit".as[Int].?) { (offset, limit) =>
+                onSuccess(
+                  todoRepositoryView ? FindTodos(
+                    offset = offset.getOrElse(0),
+                    limit = limit.getOrElse(100)
+                  )
+                ) {
+                  case resp: TodosView =>
+                    complete(StatusCodes.OK, resp)
+                  case _ =>
+                    complete(StatusCodes.BadRequest)
+                }
               }
-            }
-          } ~
-          post {
-            entity(as[CreateTodo]) { command =>
-              onSuccess(todoRepositoryProcessor ? command) {
-                case _: Success =>
-                  complete(StatusCodes.OK)
-                case _ =>
-                  complete(StatusCodes.BadRequest)
+            } ~
+              post {
+                entity(as[CreateTodo]) { command =>
+                  onSuccess(todoRepositoryProcessor ? command) {
+                    case _: Success =>
+                      complete(StatusCodes.OK)
+                    case _ =>
+                      complete(StatusCodes.BadRequest)
+                  }
+                }
               }
-            }
-          }
-        } ~
-        path(JavaUUID) { id =>
-          get {
-            onSuccess(todoRepositoryView ? FindTodo(id)) {
-              case resp: TodoView =>
-                complete(StatusCodes.OK, resp)
-              case _: NotFound =>
-                complete(StatusCodes.NotFound)
-              case _ =>
-                complete(StatusCodes.BadRequest)
-            }
           } ~
-          delete {
-            onSuccess(todoRepositoryProcessor ? RemoveTodo(id)) {
-              case _: Success =>
-                complete(StatusCodes.OK)
-              case _ =>
-                complete(StatusCodes.BadRequest)
+            path(JavaUUID) { id =>
+              get {
+                onSuccess(todoRepositoryView ? FindTodo(id)) {
+                  case resp: TodoView =>
+                    complete(StatusCodes.OK, resp)
+                  case _: NotFound =>
+                    complete(StatusCodes.NotFound)
+                  case _ =>
+                    complete(StatusCodes.BadRequest)
+                }
+              } ~
+                delete {
+                  onSuccess(todoRepositoryProcessor ? RemoveTodo(id)) {
+                    case _: Success =>
+                      complete(StatusCodes.OK)
+                    case _ =>
+                      complete(StatusCodes.BadRequest)
+                  }
+                }
             }
-          }
         }
       }
     }
