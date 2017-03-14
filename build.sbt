@@ -18,7 +18,7 @@ lazy val `todos-service` = (project in file("."))
     name := "todo-service",
     // Use customer versioning per component with different environmental variables
     version in Docker := sys.env.getOrElse("SERVICE_VERSION", default = "v0.1"),
-    dockerRepository := Some(sys.env.getOrElse("DOCKER_REPOSITORY", default = "todos")),
+    dockerRepository := Some(sys.env.getOrElse("DOCKER_REPOSITORY", default = "benniekrijger")),
     dockerBaseImage := "java:8",
     libraryDependencies ++= Dependencies.backend,
     dockerExposedPorts := Seq(8080),

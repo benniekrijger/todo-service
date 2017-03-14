@@ -5,7 +5,7 @@ if [ -n "$1" ]; then
   n=$1
 fi
 
-repo="todos"
+repo="benniekrijger"
 image="todo-service"
 tag="v0.1"
 
