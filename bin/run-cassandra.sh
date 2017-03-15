@@ -11,3 +11,6 @@ docker run \
   --name cassandra \
   --publish 9042:9042 \
   cassandra:3.7
+
+echo "Waiting for cassandra to boot..."
+sleep 10

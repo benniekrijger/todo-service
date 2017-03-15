@@ -2,21 +2,21 @@ package com.todos.repository
 
 import akka.Done
 import akka.actor.{ActorLogging, Props, Stash}
-import akka.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import akka.persistence.query.PersistenceQuery
+import akka.pattern.pipe
+import akka.persistence.query.scaladsl.CurrentEventsByPersistenceIdQuery
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
 import com.todos.event.utils.ProcessedEvent
+import com.todos.event.{TodoCreated, TodoRemoved}
 import com.todos.model.{Todo, TodoRegistry}
 import com.todos.query.{FindTodo, FindTodos}
 import com.todos.response.{NotFound, TodoView, TodosView}
-import akka.pattern.pipe
-import com.todos.event.{TodoCreated, TodoRemoved}
 
 import scala.util.Random
 
-class TodoRepositoryView() extends PersistentActor with ActorLogging with Stash {
+class TodoRepositoryView(readJournal: CurrentEventsByPersistenceIdQuery)
+  extends PersistentActor with ActorLogging with Stash {
   implicit val mat = ActorMaterializer()
 
   def persistenceId: String = TodoRepositoryView.name + "-" + self.path.name
@@ -101,12 +101,11 @@ class TodoRepositoryView() extends PersistentActor with ActorLogging with Stash 
     case SnapshotOffer(_, snapshot: TodoRegistry) =>
       log.debug("Received snapshot, snapshot={}", snapshot)
       state = snapshot
-    case _: RecoveryCompleted => // no action
+    case _: RecoveryCompleted =>
       import context.dispatcher
       log.debug("Recovered, state={}", state)
 
-      PersistenceQuery(context.system)
-        .readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
+      readJournal
         .currentEventsByPersistenceId(
           persistenceId = TodoRepositoryProcessor.name,
           fromSequenceNr = state.messageOffset.getOrElse(Long.MinValue),
@@ -126,9 +125,10 @@ class TodoRepositoryView() extends PersistentActor with ActorLogging with Stash 
 object TodoRepositoryView {
   val name: String = "todo-repository-view"
 
-  def props(): Props = {
+  def props(readJournal: CurrentEventsByPersistenceIdQuery): Props = {
     Props(
-      classOf[TodoRepositoryView]
+      classOf[TodoRepositoryView],
+      readJournal
     )
   }
 }

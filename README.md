@@ -3,7 +3,7 @@ Simple service to manage a TODO list
 
 # Requirements
 - docker
-- sbt
+- sbt (in case you want to build)
 
 # Build the service
 

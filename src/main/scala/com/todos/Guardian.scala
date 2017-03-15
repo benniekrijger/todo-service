@@ -1,6 +1,8 @@
 package com.todos
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.persistence.cassandra.query.scaladsl.CassandraReadJournal
+import akka.persistence.query.PersistenceQuery
 import akka.routing.RoundRobinPool
 import com.todos.repository.{TodoRepositoryProcessor, TodoRepositoryView}
 
@@ -12,8 +14,11 @@ class Guardian() extends Actor with ActorLogging {
     name = TodoRepositoryProcessor.name
   )
 
+  val readJournal: CassandraReadJournal = PersistenceQuery(context.system)
+    .readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
+
   val todoRepositoryView: ActorRef = context.actorOf(
-    TodoRepositoryView.props().withRouter(RoundRobinPool(5)),
+    TodoRepositoryView.props(readJournal).withRouter(RoundRobinPool(5)),
     name = TodoRepositoryView.name
   )
 
