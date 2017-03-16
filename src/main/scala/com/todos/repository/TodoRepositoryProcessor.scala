@@ -3,7 +3,7 @@ package com.todos.repository
 import java.util.UUID
 
 import akka.actor.{Actor, ActorLogging, Props}
-import akka.persistence.PersistentActor
+import akka.persistence.{PersistentActor, Recovery}
 import com.todos.command.{CreateTodo, RemoveTodo}
 import com.todos.event.utils.ProcessedEvent
 import com.todos.event.{TodoCreated, TodoRemoved}
@@ -35,7 +35,9 @@ class TodoRepositoryProcessor() extends PersistentActor with ActorLogging {
       }
   }
 
-  override def receiveRecover: Receive = Actor.ignoringBehavior
+  override def recovery: Recovery = Recovery.none
+
+  override def receiveRecover: Receive = Actor.emptyBehavior
 
 }
 
