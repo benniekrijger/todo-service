@@ -9,7 +9,7 @@ import akka.http.scaladsl.server.{Directives, Route, RouteConcatenation}
 import akka.pattern.{pipe, _}
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
-import ch.megard.akka.http.cors.CorsDirectives._
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 import com.todos.command.{CreateTodo, RemoveTodo}
 import com.todos.query.{FindTodo, FindTodos}
 import com.todos.response.{NotFound, Success, TodoView, TodosView}

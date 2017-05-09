@@ -1,7 +1,7 @@
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 
 val baseSettings = Seq(
-  scalaVersion := "2.12.1",
+  scalaVersion := "2.12.2",
   resolvers ++= Seq(
     Resolver.jcenterRepo,
     Resolver.bintrayRepo("hseeberger", "maven")

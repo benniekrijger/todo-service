@@ -2,19 +2,19 @@ import sbt._
 
 object  Dependencies {
   object Version {
-    val akka = "2.5-M1"
-    val akkaHttp = "10.0.4"
-    val akkaHttpCors = "0.1.11"
-    val akkaHttpJson4s = "1.13.0"
-    val log4j = "2.8.1"
-    val akkaLog4j = "1.3.0"
-    val scalaTest = "3.0.1"
-    val json4s = "3.5.0"
-    val jodaTime = "2.9.7"
+    val akka = "2.5.1"
+    val akkaHttp = "10.0.6"
+    val akkaHttpCors = "0.2.1"
+    val akkaHttpJson4s = "1.15.0"
+    val log4j = "2.8.2"
+    val akkaLog4j = "1.4.0"
+    val scalaTest = "3.0.2"
+    val json4s = "3.5.2"
+    val jodaTime = "2.9.9"
     val jodaConvert = "1.8.1"
     val ficus = "1.4.0"
-    val akkaPersistenceCassandra = "0.23"
-    val log4jOverSlf4j = "1.7.24"
+    val akkaPersistenceCassandra = "0.52"
+    val log4jOverSlf4j = "1.7.25"
   }
 
   private[this] lazy val tests = Seq(
