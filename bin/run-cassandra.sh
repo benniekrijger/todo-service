@@ -10,7 +10,7 @@ docker run \
   --detach \
   --name cassandra \
   --publish 9042:9042 \
-  cassandra:3.7
+  cassandra:3.9
 
 echo "Waiting for cassandra to boot..."
 sleep 10
