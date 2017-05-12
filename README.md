@@ -18,7 +18,8 @@ Start cassandra:
 Start the service:  
 `bash bin/run-todo-service.sh`
 
-The API should then be available at: `127.0.0.1:8011/api/v1/todos`
+The API should then be available at:  
+`127.0.0.1:8011/api/v1/todos`
 
 ## API
 The service exposes the following API resources:
